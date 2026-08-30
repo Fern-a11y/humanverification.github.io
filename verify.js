@@ -1,99 +1,39 @@
-(function () {
+(() => {
+  const WORKER_URL = "https://JOUW-WORKER.workers.dev";
 
-  "use strict";
+  const ua = navigator.userAgent;
 
-  const script =
-    document.currentScript;
+  let browser = "Unknown";
 
-  const url =
-    new URL(script.src);
+  if (/Edg/i.test(ua)) browser = "Edge";
+  else if (/Chrome/i.test(ua)) browser = "Chrome";
+  else if (/Firefox/i.test(ua)) browser = "Firefox";
+  else if (/Safari/i.test(ua)) browser = "Safari";
 
-  const site =
-    url.searchParams.get("site");
+  let os = "Unknown";
 
-  if (!site) {
-    console.error(
-      "HumanVerification: missing site."
-    );
-
-    return;
-  }
-
-  const API =
-    url.origin;
+  if (/Windows/i.test(ua)) os = "Windows";
+  else if (/Mac OS/i.test(ua)) os = "macOS";
+  else if (/Android/i.test(ua)) os = "Android";
+  else if (/iPhone|iPad/i.test(ua)) os = "iOS";
+  else if (/Linux/i.test(ua)) os = "Linux";
 
   const data = {
-
-    siteKey: site,
-
-    userAgent:
-      navigator.userAgent || "",
-
-    language:
-      navigator.language || "",
-
+    website: location.hostname,
+    browser,
+    os,
     timezone:
-      Intl.DateTimeFormat()
-        .resolvedOptions()
-        .timeZone || "",
-
-    webdriver:
-      navigator.webdriver === true,
-
-    headless:
-      /HeadlessChrome/i.test(
-        navigator.userAgent || ""
-      )
-
+      Intl.DateTimeFormat().resolvedOptions().timeZone || "Unknown",
+    language: navigator.language || "Unknown",
+    screen:
+      `${screen.width} × ${screen.height}`
   };
 
-  fetch(
-    API + "/api/verify",
-    {
-      method: "POST",
-
-      headers: {
-        "Content-Type":
-          "application/json"
-      },
-
-      body: JSON.stringify(data)
-    }
-  )
-  .then(response =>
-    response.json()
-  )
-  .then(result => {
-
-    window.HumanVerification = {
-      status:
-        result.status,
-
-      riskScore:
-        result.riskScore,
-
-      verified:
-        result.status ===
-        "VERIFIED"
-    };
-
-    window.dispatchEvent(
-      new CustomEvent(
-        "humanverification",
-        {
-          detail: result
-        }
-      )
-    );
-
-  })
-  .catch(error => {
-
-    console.error(
-      "HumanVerification:",
-      error
-    );
-
-  });
-
+  fetch(WORKER_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(data)
+  }).catch(() => {});
 })();
