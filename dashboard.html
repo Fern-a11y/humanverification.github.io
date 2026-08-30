@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - HumanVerify</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<nav>
+  <b>HumanVerify</b>
+
+  <div>
+    <a href="index.html">Home</a>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="docs.html">Docs</a>
+  </div>
+</nav>
+
+<section class="hero">
+
+  <h1 style="font-size:42px">
+    Create your site
+  </h1>
+
+  <p>
+    Enter your website to generate your verification code.
+  </p>
+
+  <input
+    id="site"
+    placeholder="https://example.com"
+    style="padding:14px;width:300px;border-radius:8px;border:0"
+  >
+
+  <br><br>
+
+  <button
+    class="button"
+    onclick="generate()"
+  >
+    Generate
+  </button>
+
+  <pre
+    id="code"
+    style="
+      text-align:left;
+      margin:40px auto;
+      max-width:700px;
+      padding:20px;
+      background:#15151a;
+      border-radius:10px;
+      overflow:auto;
+    "
+  ></pre>
+
+</section>
+
+<script src="app.js"></script>
+
+</body>
+</html>
