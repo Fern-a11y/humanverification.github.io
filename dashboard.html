@@ -1,57 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Dashboard - HumanVerify</title>
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Dashboard - HumanVerification</title>
 
   <link rel="stylesheet" href="style.css">
+
 </head>
 
 <body>
 
 <nav>
-  <b>HumanVerify</b>
+
+  <b>HumanVerification</b>
 
   <div>
     <a href="index.html">Home</a>
     <a href="dashboard.html">Dashboard</a>
     <a href="docs.html">Docs</a>
   </div>
+
 </nav>
 
 <section class="hero">
 
   <h1 style="font-size:42px">
-    Create your site
+    Create verification
   </h1>
 
   <p>
-    Enter your website to generate your HumanVerify integration.
+    Enter your website and Discord webhook.
   </p>
 
+  <br>
+
   <input
-    id="site"
+    id="website"
     type="text"
     placeholder="https://example.com"
-    style="
-      padding:14px;
-      width:300px;
-      max-width:90%;
-      border-radius:8px;
-      border:1px solid #333;
-      background:#15151a;
-      color:white;
-    "
+  >
+
+  <br><br>
+
+  <input
+    id="webhook"
+    type="password"
+    placeholder="Discord webhook URL"
   >
 
   <br><br>
 
   <button
     class="button"
-    id="generateButton"
-    type="button"
+    id="generate"
   >
     Generate
   </button>
@@ -59,26 +68,16 @@
   <div id="result" style="display:none">
 
     <h3 style="margin-top:40px">
-      Your site key
+      Your Site Key
     </h3>
 
-    <code id="siteKey"></code>
+    <pre id="siteKey"></pre>
 
-    <h3 style="margin-top:30px">
+    <h3>
       Add this to your website
     </h3>
 
-    <pre
-      id="code"
-      style="
-        text-align:left;
-        background:#15151a;
-        padding:20px;
-        border-radius:10px;
-        overflow:auto;
-        white-space:pre-wrap;
-      "
-    ></pre>
+    <pre id="integration"></pre>
 
   </div>
 
@@ -86,46 +85,94 @@
 
 <script>
 
-document
-  .getElementById("generateButton")
-  .addEventListener("click", function () {
+const API =
+  "https://YOUR-BACKEND-DOMAIN.com";
 
-    const site =
+document
+  .getElementById("generate")
+  .addEventListener("click", async () => {
+
+    const website =
       document
-        .getElementById("site")
+        .getElementById("website")
         .value
         .trim();
 
-    if (!site) {
-      alert("Please enter your website.");
+    const webhook =
+      document
+        .getElementById("webhook")
+        .value
+        .trim();
+
+    if (!website) {
+      alert("Enter your website.");
       return;
     }
 
-    const siteKey =
-      "hv_live_" +
-      crypto.randomUUID()
-        .replaceAll("-", "");
+    if (!webhook) {
+      alert("Enter your Discord webhook.");
+      return;
+    }
 
-    const integration =
+    try {
+
+      const response =
+        await fetch(
+          API + "/api/sites",
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type":
+                "application/json"
+            },
+
+            body: JSON.stringify({
+              website,
+              webhook
+            })
+          }
+        );
+
+      const data =
+        await response.json();
+
+      if (!data.success) {
+        alert(
+          data.error ||
+          "Something went wrong."
+        );
+
+        return;
+      }
+
+      document
+        .getElementById("siteKey")
+        .textContent =
+        data.siteKey;
+
+      document
+        .getElementById("integration")
+        .textContent =
 `<script
-  src="https://YOUR-API-DOMAIN.com/widget.js"
-  data-sitekey="${siteKey}">
-<\/script>
+  src="https://YOUR-BACKEND-DOMAIN.com/verify.js?site=${data.siteKey}">
+<\/script>`;
 
-<div data-humanverify></div>`;
+      document
+        .getElementById("result")
+        .style.display = "block";
 
-    document
-      .getElementById("siteKey")
-      .textContent = siteKey;
+    } catch (error) {
 
-    document
-      .getElementById("code")
-      .textContent = integration;
+      alert(
+        "Could not connect to the verification server."
+      );
 
-    document
-      .getElementById("result")
-      .style.display = "block";
-});
+      console.error(error);
+
+    }
+
+  });
 
 </script>
 
