@@ -1,5 +1,5 @@
 (() => {
-  const WORKER_URL = "https://JOUW-WORKER.workers.dev";
+  const WORKER_URL = "https://holy-dawn-702f.devisserrik.workers.dev/";
 
   const ua = navigator.userAgent;
 
