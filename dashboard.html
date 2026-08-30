@@ -3,7 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Dashboard - HumanVerify</title>
+
   <link rel="stylesheet" href="style.css">
 </head>
 
@@ -26,40 +28,106 @@
   </h1>
 
   <p>
-    Enter your website to generate your verification code.
+    Enter your website to generate your HumanVerify integration.
   </p>
 
   <input
     id="site"
+    type="text"
     placeholder="https://example.com"
-    style="padding:14px;width:300px;border-radius:8px;border:0"
+    style="
+      padding:14px;
+      width:300px;
+      max-width:90%;
+      border-radius:8px;
+      border:1px solid #333;
+      background:#15151a;
+      color:white;
+    "
   >
 
   <br><br>
 
   <button
     class="button"
-    onclick="generate()"
+    id="generateButton"
+    type="button"
   >
     Generate
   </button>
 
-  <pre
-    id="code"
-    style="
-      text-align:left;
-      margin:40px auto;
-      max-width:700px;
-      padding:20px;
-      background:#15151a;
-      border-radius:10px;
-      overflow:auto;
-    "
-  ></pre>
+  <div id="result" style="display:none">
+
+    <h3 style="margin-top:40px">
+      Your site key
+    </h3>
+
+    <code id="siteKey"></code>
+
+    <h3 style="margin-top:30px">
+      Add this to your website
+    </h3>
+
+    <pre
+      id="code"
+      style="
+        text-align:left;
+        background:#15151a;
+        padding:20px;
+        border-radius:10px;
+        overflow:auto;
+        white-space:pre-wrap;
+      "
+    ></pre>
+
+  </div>
 
 </section>
 
-<script src="app.js"></script>
+<script>
+
+document
+  .getElementById("generateButton")
+  .addEventListener("click", function () {
+
+    const site =
+      document
+        .getElementById("site")
+        .value
+        .trim();
+
+    if (!site) {
+      alert("Please enter your website.");
+      return;
+    }
+
+    const siteKey =
+      "hv_live_" +
+      crypto.randomUUID()
+        .replaceAll("-", "");
+
+    const integration =
+`<script
+  src="https://YOUR-API-DOMAIN.com/widget.js"
+  data-sitekey="${siteKey}">
+<\/script>
+
+<div data-humanverify></div>`;
+
+    document
+      .getElementById("siteKey")
+      .textContent = siteKey;
+
+    document
+      .getElementById("code")
+      .textContent = integration;
+
+    document
+      .getElementById("result")
+      .style.display = "block";
+});
+
+</script>
 
 </body>
 </html>
